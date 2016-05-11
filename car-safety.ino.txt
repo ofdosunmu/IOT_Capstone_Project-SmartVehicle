@@ -1,0 +1,70 @@
+// This #include statement was automatically added by the Particle IDE.
+
+#include "Tinker-Servo/Tinker-Servo.h"
+
+
+
+int led = D1; // Declaring pin D1 as the led pin for the car battery indicator lamp.
+
+
+int photoresistor = A0; // Declaring pin A0 as the photo resistor pin.
+
+
+int carEngine = A1; 
+
+int power = A5; // pin A5 is declared as the power pin to power the photo resistor.
+
+
+int batteryPower; // This is declared to store the value of the current coming from the car battery indicator led.
+
+
+
+void setup() {
+    // Init the libary, setting up function links and globals.
+    
+      init_tinker_servo ( ); 
+    
+      pinMode(carEngine,OUTPUT);
+     // Set pin A1 that start the engine as output.
+      pinMode(led,OUTPUT);           // Set the led pin as output.
+    
+      pinMode(photoresistor,INPUT);  // set the photoresistor pin as input.
+    
+      pinMode(power,OUTPUT);         // Also set pin A5 powering the resistor as output.
+ 
+      digitalWrite(power,HIGH);      // Power up the resistor.
+    
+      digitalWrite(led,HIGH);        // Power up the battery indicator lamp.
+    
+
+      Particle.variable("batteryPower", &batteryPower, INT); // Register the battery power variable for cloud usage.
+
+
+      Particle.function("digitalwrite", tinkerDigitalWrite); // Register library function tinkerDigitalWrite for cloud usage.
+ 
+      Particle.function("attachServo", tinkerServoOpen);     // Register library function tinkerServoOpen for cloud usage.
+
+      Particle.function("turnServo",tinkerServoSet);         // Register library function tinkerServoSet for cloud usage.
+     
+}
+
+void loop() {
+    
+  
+     batteryPower = analogRead(photoresistor);
+    //Read battery power by reading the brigthness of light coming from battery indicator lamp.
+     delay(100);
+
+     if  (batteryPower < 900 ){ // if battery power falls below a certain voltage level start engine to recharge battery.
+ 
+       
+      digitalWrite(carEngine,HIGH);
+     
+             delay(30000);
+      
+             digitalWrite(carEngine, LOW); // Off the engine after half a minute.
+
+      
+    }
+
+   }
